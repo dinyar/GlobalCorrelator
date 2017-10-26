@@ -53,7 +53,7 @@ begin
                     end if;
                 end loop;
             end if;
-            if counter_in = N_OBJ_SECTOR and signal_done = '0' then
+            if counter_in = N_OBJ_SECTOR and signal_done = '0' and read_in = '1'  then 
                 signal_done <= '1';
                 valid_out <= '1';
             else
