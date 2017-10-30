@@ -24,7 +24,8 @@ architecture Behavioral of regionizer_full is
     signal region_data : regions(N_REGIONS-1 downto 0);
     signal merge_valid: std_logic_vector(N_REGIONS-1 downto 0);
     signal was_valid : std_logic;
-    signal mux_counter: natural range 0 to N_PHI-1;
+    signal mux_counter: natural range 0 to N_CLOCK-1;
+    signal half_tick : std_logic; -- use to send outputs at half frequency
 begin
     -- could become a single generate loop once I learn how to read constants
     eta0: entity work.regionizer_eta
@@ -48,23 +49,27 @@ begin
             was_valid <= '0';
         elsif rising_edge(clk) then
             if was_valid = '0' and merge_valid(0) = '1' then
-                mux_counter <= 1;
+                mux_counter <= 0;
                 counter_out <= 0;
                 data_out    <= region_data(0);
                 valid_out   <= merge_valid(0);
                 was_valid   <= '1';
-            elsif mux_counter < N_REGIONS then
-                if mux_counter < N_CLOCK-1 then
+                half_tick   <= '0';
+            elsif half_tick = '0' then
+                half_tick <= '1'; 
+                if mux_counter < N_REGIONS-1 then
                     mux_counter <= mux_counter + 1;
                 else
                     mux_counter <= 0;
                 end if;
-                mux_counter <= mux_counter + 1;
+            elsif mux_counter < N_REGIONS then
                 counter_out <= mux_counter;
                 data_out    <= region_data(mux_counter);
                 valid_out   <= merge_valid(mux_counter);
                 was_valid   <= merge_valid(mux_counter);
+                half_tick   <= '0';
             else
+                -- report "This shouldn't happen";
                 if mux_counter < N_CLOCK-1 then
                     mux_counter <= mux_counter + 1;
                 else
@@ -74,6 +79,7 @@ begin
                 data_out    <= (others => null_particle);
                 valid_out   <= '0';
                 was_valid   <= '0';
+                half_tick   <= '0';
             end if;
         end if;
     end process;

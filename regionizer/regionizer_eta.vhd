@@ -62,7 +62,7 @@ begin
             elsif outv_buffer(0) = '1' then
                 data_out <= out_buffer;
                 valid_out <= outv_buffer;
-                out_lifetime <= N_REGIONS;
+                out_lifetime <= N_CLOCK-1;
             else
                 data_out <= (others => (others => null_particle));
                 valid_out <= (others => '0');
