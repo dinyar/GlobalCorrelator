@@ -15,7 +15,7 @@ begin
     clk_n <= not clk_p;
    
     uut : entity work.top
-            port map (sysclk_in_p => clk_p, sysclk_in_n => clk_n, rst => '0');
+            port map (sysclk_in_p => clk_p, sysclk_in_n => clk_n, rst_in => '0');
 
     pippo : process 
     begin

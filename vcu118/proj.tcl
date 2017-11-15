@@ -15,6 +15,7 @@ add_files null_algo.vhd
 add_files top.vhd  
 add_files -fileset sim_1 tb.vhd 
 add_files -fileset constrs_1 base.xdc 
+add_files -fileset constrs_1 pblocks.tcl 
 
 import_files -force -norecurse
 
@@ -24,3 +25,6 @@ update_compile_order -fileset sim_1
 
 launch_runs synth_1
 wait_on_run synth_1
+
+#open_run synth_1 -name synth_1
+#source pblocks.tcl

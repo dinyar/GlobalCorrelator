@@ -17,7 +17,7 @@ entity top is
 end top;
 
 architecture Behavioral of top is
-    signal sysclk_tmp, clk, rst, rst_tmp, rst_meta : std_logic;
+    signal sysclk_tmp, clk, rst, rst_tmp, rst_meta, rst_buf : std_logic;
 
     signal data_to_algo   : ndata(4*N_QUADS-1 downto 0);
     signal data_from_algo : ndata(4*N_QUADS-1 downto 0);
@@ -47,6 +47,7 @@ algo: entity work.ultra_null_algo
 
 rst_button:   IBUF port map ( I => rst_in, O => rst_tmp );
 rst_bridge_1: FDPE port map ( D => '0',      PRE => rst_tmp, CE => '1', C => clk, Q => rst_meta );
-rst_bridge_2: FDPE port map ( D => rst_meta, PRE => rst_tmp, CE => '1', C => clk, Q => rst );
+rst_bridge_2: FDPE port map ( D => rst_meta, PRE => rst_tmp, CE => '1', C => clk, Q => rst_buf );
+rst_bufg:     BUFG port map ( I => rst_buf, O => rst );
 
 end Behavioral;
