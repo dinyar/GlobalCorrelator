@@ -1,6 +1,8 @@
 setup settings.tcl
 
 include -c boards/vcu118-eval board.dep
+#include -c boards/kcu1500-eval board.dep
+
 src --cd ../ucf base.xdc
 
 src bram_sdp.vhd

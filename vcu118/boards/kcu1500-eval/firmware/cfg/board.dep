@@ -1,0 +1,11 @@
+@device_name = "xcku115"
+@device_package = "-flvb2104"
+@device_speed = "-2-e"
+
+setup settings.tcl
+
+src --cd ../ucf base.xdc
+src --cd ../ucf pins.xdc
+src --cd ../ucf pblocks.tcl
+
+src board_constants.vhd

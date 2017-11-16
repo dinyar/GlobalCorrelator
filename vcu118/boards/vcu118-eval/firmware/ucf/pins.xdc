@@ -1,8 +1,9 @@
-# FROM UG1224 VCU118 board user guide, chapter 3, section Programmable User Clock 1
-set_property IOSTANDARD LVDS [get_ports sysclk_in_p]
-set_property IOSTANDARD LVDS [get_ports sysclk_in_n]
-set_property PACKAGE_PIN H32 [get_ports sysclk_in_p]
-set_property PACKAGE_PIN G32 [get_ports sysclk_in_n]
+# FROM UG1224 VCU118 board user guide, chapter 3
+# Using 300 MHz system clock from the board
+set_property IOSTANDARD DIFF_SSTL12 [get_ports sysclk_in_p]
+set_property IOSTANDARD DIFF_SSTL12 [get_ports sysclk_in_n]
+set_property PACKAGE_PIN G31 [get_ports sysclk_in_p]
+set_property PACKAGE_PIN F31 [get_ports sysclk_in_n]
 
 # Table 3-29 of UG1224 VCU118 board user guide
 # Also /Vivado/2016.4/data/boards/board_files/vcu118/1.0/part0_pins.xml
