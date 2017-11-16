@@ -1,6 +1,7 @@
 setup settings.tcl
 
 include -c boards/vcu118-eval board.dep
+src --cd ../ucf base.xdc
 
 src bram_sdp.vhd
 src ultra_buffer.vhd
