@@ -19,6 +19,11 @@ architecture behavioral of ultra_null_algo is
     constant N_QQUADS : natural := (N_QUADS+3)/4;
     subtype int16 is signed(15 downto 0);
     type vint16 is array (natural range <>) of int16;
+    -- some buffers to help the thing meet the timing
+    signal buff_in : ndata(4*N_QUADS-1 downto 0);
+    signal buff_out : ndata(4*N_QUADS-1 downto 0);
+    signal buff_out1 : ndata(4*N_QUADS-1 downto 0);
+    signal buff_out2 : ndata(4*N_QUADS-1 downto 0);
     -- let's do something that has some non-trivial routing
     signal fibers_hi: vint16(4*N_QUADS-1 downto 0);
     signal fibers_lo: vint16(4*N_QUADS-1 downto 0);
@@ -33,6 +38,16 @@ architecture behavioral of ultra_null_algo is
     signal tot_lo: int16;
     signal tot_ok: std_logic;
 begin
+    buffers: process(clk)
+    begin
+        if rising_edge(clk) then
+            buff_in <= d;
+            buff_out1 <= buff_out;
+            buff_out2 <= buff_out1;
+            q <= buff_out2;
+        end if;
+    end process buffers;
+
     mkf: process(clk,rst)
     begin
         if rst = '1' then
@@ -41,9 +56,9 @@ begin
             end loop;
         elsif rising_edge(clk) then
             for i in 4*N_QUADS-1 downto 0 loop
-                fibers_hi(i) <= signed(d(i).data(31 downto 16));
-                fibers_lo(i) <= signed(d(i).data(15 downto  0));
-                fibers_ok(i) <= d(i).valid;
+                fibers_hi(i) <= signed(buff_in(i).data(31 downto 16));
+                fibers_lo(i) <= signed(buff_in(i).data(15 downto  0));
+                fibers_ok(i) <= buff_in(i).valid;
             end loop;
         end if;
     end process;
@@ -115,9 +130,9 @@ begin
     begin
         if rising_edge(clk) then
             for i in 4*N_QUADS-1 downto 0 loop
-                q(i).data(31 downto 16) <= std_logic_vector(tot_hi);
-                q(i).data(15 downto  0) <= std_logic_vector(tot_lo);
-                q(i).valid <= tot_ok;
+                buff_out(i).data(31 downto 16) <= std_logic_vector(tot_hi);
+                buff_out(i).data(15 downto  0) <= std_logic_vector(tot_lo);
+                buff_out(i).valid <= tot_ok;
             end loop;
         end if;
     end process;
