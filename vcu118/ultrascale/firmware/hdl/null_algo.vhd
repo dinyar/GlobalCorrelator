@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 
 use work.ultra_data_types.all;
 use work.ultra_constants.all;
+use work.board_constants.all;
 
 entity ultra_null_algo is
     port (

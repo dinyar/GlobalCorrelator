@@ -16,6 +16,6 @@
 
  - For the KU115:
    - A2104: 52 links: quads 224 225 226 227 231 232 233 126 127 128 131 132 133
-   - B2104: 62 links (max available): quads 224 225 226 227 228 229 230 231 232 233 126 127 128 131 132 133
+   - B2104: 64 links (max available): quads 224 225 226 227 228 229 230 231 232 233 126 127 128 131 132 133
       - Quad mapping in KU115: QSFP 1-2 (quad 127 128), PCIExpress (224 225 226 227)
 

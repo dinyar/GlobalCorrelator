@@ -15,20 +15,26 @@ fi
 BUILD_DIR="build/"
 BASE_DIR=`pwd`
 
-mkdir $BUILD_DIR
+test -d $BUILD_DIR || mkdir $BUILD_DIR
 cd $BUILD_DIR
 
 # Anonymous checkout of ipbb
-curl -L https://github.com/ipbus/ipbb/archive/v0.2.8.tar.gz | tar xvz
-mv ipbb-0.2.8 ipbb
+if test -d ipbb; then
+    echo "Will not re-download ipbb";
+else
+    curl -L https://github.com/ipbus/ipbb/archive/v0.2.8.tar.gz | tar xvz
+    mv ipbb-0.2.8 ipbb;
+fi;
 
 source ipbb/env.sh
 
+test -d ultratests && rm -r ultratests
 ipbb init ultratests
 
 mkdir ultratests/src/ultratests
 pushd ultratests/src/ultratests
 ln -sf ../../../../ultrascale .
+ln -sf ../../../../boards .
 popd
 
 #pushd ultratests/src

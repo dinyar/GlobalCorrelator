@@ -1,0 +1,11 @@
+@device_name = "xcvu9p"
+@device_package = "-flga2104"
+@device_speed = "-2L-e-es1"
+
+setup settings.tcl
+
+src --cd ../ucf base.xdc
+src --cd ../ucf pins.xdc
+src --cd ../ucf pblocks.tcl
+
+src board_constants.vhd

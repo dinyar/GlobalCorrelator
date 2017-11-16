@@ -6,6 +6,7 @@ use unisim.vcomponents.all;
 
 use work.ultra_data_types.all;
 use work.ultra_constants.all;
+use work.board_constants.all;
 
 entity top is
  port (
