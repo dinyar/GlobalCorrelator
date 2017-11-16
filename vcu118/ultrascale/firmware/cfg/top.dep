@@ -1,0 +1,18 @@
+@device_family = "virtex7"
+@device_name = "xcvu9p"
+@device_package = "-flga2104"
+@device_speed = "-2L-e-es1"
+
+setup settings.tcl
+
+src --cd ../ucf base.xdc 
+src --cd ../ucf pblocks.tcl
+
+src bram_sdp.vhd
+src ultra_buffer.vhd
+src ultra_constants.vhd
+src ultra_data_types.vhd
+src null_algo.vhd
+src dummy_blinker.vhd
+src top.vhd
+setup build.tcl
