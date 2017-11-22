@@ -8,4 +8,6 @@ src --cd ../ucf base.xdc
 src --cd ../ucf pins.xdc
 src --cd ../ucf pblocks.tcl
 
+src ttc_clocks.vhd
+
 src board_constants.vhd

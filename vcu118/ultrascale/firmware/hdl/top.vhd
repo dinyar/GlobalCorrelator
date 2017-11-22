@@ -18,37 +18,54 @@ entity top is
 end top;
 
 architecture Behavioral of top is
-    signal sysclk_tmp, clk, rst, rst_tmp, rst_meta, rst_buf : std_logic;
+    signal sysclk_tmp, clk_p, rst, rst_p, rst_tmp, rst_meta, rst_buf : std_logic;
 
     signal data_to_algo   : ndata(4*N_QUADS-1 downto 0);
     signal data_from_algo : ndata(4*N_QUADS-1 downto 0);
 begin
 
-IBUFGDS_sys : IBUFGDS
-  port map ( I  => sysclk_in_p, IB => sysclk_in_n, O  => sysclk_tmp);
+  clocks: entity work.ttc_clocks
+  port map(
+    clk40_in_p => sysclk_in_p,
+    clk40_in_n => sysclk_in_n,
+    clk_p40 => '1',
+    clko_40 => open,
+    clko_p => clk_p,
+    clko_aux => open,
+    rsto_40 => open,
+    rsto_p => rst_p,
+    rsto_aux => open,
+    clko_40s => open,
+    stopped => open,
+    locked => open,
+    rst_mmcm => rst_in,
+    rsti => rst_in,  -- Using the same reset for MMCM and rest of board, may need to delay this reset a bit until MMCM is ready again.
+    clksel => '1', -- Selecting LVDS inputs for now.
+    psval => (others => '0'),
+    psok => open,
+    psen => '0'
+  );
 
-BUFG_syspre : BUFG
-  port map ( I => sysclk_tmp, O => clk);
-    
-blink: entity work.dummy_blinker
-   port map(
-        clk => clk,
-        rst => rst,
-        l1 => leds(0),
-        l2 => leds(1)
-   );
+  blink: entity work.dummy_blinker
+     port map(
+          clk => clk_p,
+          rst => rst,
+          l1 => leds(0),
+          l2 => leds(1)
+     );
 
-gen_buffers: for Q in N_QUADS-1 downto 0 generate
-    buffs : entity work.ultra_buffer
-        port map(clk => clk, rst => rst, we => '1', rx_out => data_to_algo(4*(Q+1)-1 downto 4*Q), tx_in => data_from_algo(4*(Q+1)-1 downto 4*Q));
-end generate gen_buffers;
- 
-algo: entity work.ultra_null_algo
-    port map(clk => clk, rst => rst, d => data_to_algo, q => data_from_algo);
+  gen_buffers: for Q in N_QUADS-1 downto 0 generate
+      buffs : entity work.ultra_buffer
+          port map(clk => clk_p, rst => rst, we => '1', rx_out => data_to_algo(4*(Q+1)-1 downto 4*Q), tx_in => data_from_algo(4*(Q+1)-1 downto 4*Q));
+  end generate gen_buffers;
 
-rst_button:   IBUF port map ( I => rst_in, O => rst_tmp );
-rst_bridge_1: FDPE port map ( D => '0',      PRE => rst_tmp, CE => '1', C => clk, Q => rst_meta );
-rst_bridge_2: FDPE port map ( D => rst_meta, PRE => rst_tmp, CE => '1', C => clk, Q => rst_buf );
-rst_bufg:     BUFG port map ( I => rst_buf, O => rst );
+  algo: entity work.ultra_null_algo
+      port map(clk => clk_p, rst => rst, d => data_to_algo, q => data_from_algo);
+
+  -- Not sure if all of this is still needed here.
+  rst_button:   IBUF port map ( I => rst_p, O => rst_tmp );
+  rst_bridge_1: FDPE port map ( D => '0',      PRE => rst_tmp, CE => '1', C => clk_p, Q => rst_meta );
+  rst_bridge_2: FDPE port map ( D => rst_meta, PRE => rst_tmp, CE => '1', C => clk_p, Q => rst_buf );
+  rst_bufg:     BUFG port map ( I => rst_buf, O => rst );
 
 end Behavioral;
