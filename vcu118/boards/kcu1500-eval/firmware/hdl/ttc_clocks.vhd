@@ -44,8 +44,6 @@ architecture rtl of ttc_clocks is
   signal clk40_u, clk_p_u, clk40s_u, clk40_i, clk_p_i: std_logic;
   signal clks_aux_u, clks_aux_i, rsto_aux_r: std_logic_vector(2 downto 0);
   signal locked_i, rsto_p_r: std_logic;
-  signal pscur_i: std_logic_vector(11 downto 0);
-  signal psrst, psgo, psincdec, psdone, psbusy, psdiff: std_logic;
 
 begin
 
@@ -70,15 +68,14 @@ begin
     generic map(
       clkin1_period => 25.0,
       clkin2_period => 25.0,
-      clkfbout_mult_f => 24.0,  -- Setting VCO to frequency within [600, 1200] MHz (DS892 for Kintex Ultrascale)
-      clkout1_divide => 24,
-      clkout2_divide => 24,
+      clkfbout_mult_f => 4.0,  -- Setting VCO to frequency within [600, 1200] MHz (DS892 for Kintex Ultrascale)
+      clkout1_divide => 4,
+      clkout2_divide => 4,
       clkout2_phase => 45.0,  -- Used to sample TTC stream in MP7.
-      -- clkout2_use_fine_ps => true,
-      clkout3_divide => 24 / CLOCK_RATIO,
-      clkout4_divide => 24 / CLOCK_AUX_RATIO(0),
-      clkout5_divide => 24 / CLOCK_AUX_RATIO(1),
-      clkout6_divide => 24 / CLOCK_AUX_RATIO(2)
+      clkout3_divide => 4 / CLOCK_RATIO,
+      clkout4_divide => 4 / CLOCK_AUX_RATIO(0),
+      clkout5_divide => 4 / CLOCK_AUX_RATIO(1),
+      clkout6_divide => 4 / CLOCK_AUX_RATIO(2)
     )
     port map(
       clkin1 => clk40_bp,
@@ -102,42 +99,13 @@ begin
       den => '0',
       dclk => '0',
       psclk => clk40_i,
-      psen => psgo,
-      psincdec => psincdec,
-      psdone => psdone,
+      psen => '0',
+      psincdec => '0',
+      psdone => open,
       cddcreq => '0'
     );
 
   locked <= locked_i;
-
--- Phase shift state machine
--- We're shifting clko_40s until it matches the value entered in psval.
-
-  psrst <= rst_mmcm or not locked_i or not psen;
-
-  process(clk40_i)
-  begin
-    if rising_edge(clk40_i) then
-
-      if psrst = '1' then
-        pscur_i <= X"000";
-      elsif psdone = '1' then
-        if psincdec = '1' then
-          pscur_i <= std_logic_vector(unsigned(pscur_i) + 1);
-        else
-          pscur_i <= std_logic_vector(unsigned(pscur_i) - 1);
-        end if;
-      end if;
-
-      psgo <= psdiff and not (psbusy or psgo or psrst);
-      psbusy <= ((psbusy and not psdone) or psgo) and not psrst;
-
-    end if;
-  end process;
-
-  psincdec <= '1' when psval > pscur_i else '0';
-  psdiff <= '1' when psval /= pscur_i else '0';
-  psok <= not psdiff;
 
 -- Buffers
 

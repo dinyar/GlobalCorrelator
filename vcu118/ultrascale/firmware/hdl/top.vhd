@@ -62,10 +62,6 @@ begin
   algo: entity work.ultra_null_algo
       port map(clk => clk_p, rst => rst, d => data_to_algo, q => data_from_algo);
 
-  -- Not sure if all of this is still needed here.
-  rst_button:   IBUF port map ( I => rst_p, O => rst_tmp );
-  rst_bridge_1: FDPE port map ( D => '0',      PRE => rst_tmp, CE => '1', C => clk_p, Q => rst_meta );
-  rst_bridge_2: FDPE port map ( D => rst_meta, PRE => rst_tmp, CE => '1', C => clk_p, Q => rst_buf );
-  rst_bufg:     BUFG port map ( I => rst_buf, O => rst );
+  rst_bufg:     BUFG port map ( I => rst_p, O => rst );
 
 end Behavioral;
